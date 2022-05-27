@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spaceflight News</title>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <form class="form">
+      <label>Spaceflight articles</label>
+      <input type="number" class="nb-news-input" />
+      <input type="submit" class="button" />
+    </form>
+
+    <div class="container"></div>
+
+    <script>
+      const NewsNumberUserInput = document.querySelector('.form');
+      const articles = document.querySelector('.container');
+
+      NewsNumberUserInput.addEventListener('submit', loadNews);
+
+      function loadNews(e) {
+        e.preventDefault();
+        let url = 'https://api.spaceflightnewsapi.net/v3/articles';
+        fetch(url)
+          .then((res) => {
+            return res.json();
+          })
+          .then((data) => {
+            data.map((id, title, summary) => {
+              console.log(id);
+              console.log(title);
+              console.log(summary);
+              //   const summar = id;
+              //   const art = document.createElement('div');
+              //   art.innerHTML = summar;
+              //   articles.appendChild(art);
+            });
+          });
+      }
+    </script>
+  </body>
+</html>

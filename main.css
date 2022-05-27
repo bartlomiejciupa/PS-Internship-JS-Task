@@ -1,0 +1,29 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.form {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  font-family: inherit;
+  font-size: 25px;
+  border-bottom: 2px solid gray;
+  text-align: center;
+}
+
+.button {
+  border: solid red 2px;
+}
+
+.container {
+  display: flex;
+  border: solid blue 1px;
+  height: 100%;
+  width: 90%;
+  max-width: 900px;
+  margin: 0 auto 20px;
+}
