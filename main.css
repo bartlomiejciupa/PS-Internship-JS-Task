@@ -5,10 +5,10 @@
 }
 
 .form {
+  margin-top: 30px;
   display: block;
   width: 100%;
   padding: 10px;
-  border: none;
   font-family: inherit;
   font-size: 25px;
   border-bottom: 2px solid gray;
@@ -17,13 +17,30 @@
 
 .button {
   border: solid red 2px;
+  background-color: black;
+  color: wheat;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  padding: 5px;
+}
+:hover.button {
+  background-color: beige;
+  color: black;
 }
 
 .container {
+  padding: 10px;
   display: flex;
-  border: solid blue 1px;
   height: 100%;
   width: 90%;
   max-width: 900px;
-  margin: 0 auto 20px;
+  margin: 20px auto 0;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+h2:before {
+  content: '';
+  background-color: blue;
 }

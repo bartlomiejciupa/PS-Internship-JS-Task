@@ -14,31 +14,50 @@
       <input type="submit" class="button" />
     </form>
 
-    <div class="container"></div>
+    <div class="container">
+      <div class="news-list"></div>
+    </div>
 
     <script>
       const NewsNumberUserInput = document.querySelector('.form');
-      const articles = document.querySelector('.container');
+      const newsList = document.querySelector('.news-list');
 
       NewsNumberUserInput.addEventListener('submit', loadNews);
 
       function loadNews(e) {
+        newsList.innerText = '';
         e.preventDefault();
         let url = 'https://api.spaceflightnewsapi.net/v3/articles';
+
         fetch(url)
-          .then((res) => {
-            return res.json();
+          .then((response) => {
+            return response.json();
           })
           .then((data) => {
-            data.map((id, title, summary) => {
-              console.log(id);
-              console.log(title);
-              console.log(summary);
-              //   const summar = id;
-              //   const art = document.createElement('div');
-              //   art.innerHTML = summar;
-              //   articles.appendChild(art);
+            data.forEach((news) => {
+              let newsTitle = document.createElement('h2');
+              let summaryField = document.createElement('p');
+              let link = document.createElement('a');
+
+              link.textContent = 'Read more';
+              link.setAttribute('href', news.url);
+              link.setAttribute('target', '_blank');
+              newsTitle.textContent = news.title;
+
+              if (news.summary.length - 200 <= 0) {
+                summaryField.textContent = news.summary + ' ...';
+              } else {
+                summaryField.textContent =
+                  news.summary.substring(0, 200) + ' ...';
+              }
+
+              newsList.appendChild(newsTitle);
+              newsList.appendChild(summaryField);
+              newsList.appendChild(link);
             });
+          })
+          .catch((error) => {
+            console.log(error);
           });
       }
     </script>
