@@ -8,26 +8,45 @@
     <link rel="stylesheet" href="main.css" />
   </head>
   <body>
-    <form class="form">
+    <form class="form" action="">
       <label>Spaceflight articles</label>
-      <input type="number" class="nb-news-input" />
-      <input type="submit" class="button" />
+      <input type="text" class="nb-news-input" />
     </form>
 
     <div class="container">
       <div class="news-list"></div>
     </div>
 
+    <div class="loading">
+      <div class="ball"></div>
+      <div class="ball"></div>
+      <div class="ball"></div>
+    </div>
+
     <script>
-      const NewsNumberUserInput = document.querySelector('.form');
+      const userInput = document.querySelector('.nb-news-input');
       const newsList = document.querySelector('.news-list');
 
-      NewsNumberUserInput.addEventListener('submit', loadNews);
+      const loading = document.querySelector('.loading');
+      userInput.addEventListener('change', loadNews);
+
+      window.addEventListener('scroll', () => {
+        const { scrollTop, scrollHeight, clientHeight } =
+          document.documentElement;
+
+        if (clientHeight + scrollTop >= scrollHeight) {
+          showLoading();
+        }
+      });
+      function showLoading() {
+        loading.classList.add('show');
+        setTimeout(loadNews, 1000);
+      }
 
       function loadNews(e) {
-        newsList.innerText = '';
-        e.preventDefault();
-        let url = 'https://api.spaceflightnewsapi.net/v3/articles';
+        let newsNumber = userInput.value;
+
+        let url = `https://api.spaceflightnewsapi.net/v3/articles?_limit=${newsNumber}`;
 
         fetch(url)
           .then((response) => {
@@ -54,12 +73,14 @@
               newsList.appendChild(newsTitle);
               newsList.appendChild(summaryField);
               newsList.appendChild(link);
+              loading.classList.remove('show');
             });
           })
           .catch((error) => {
             console.log(error);
           });
       }
+      loadNews();
     </script>
   </body>
 </html>
