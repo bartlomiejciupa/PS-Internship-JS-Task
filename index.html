@@ -6,11 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Spaceflight News</title>
     <link rel="stylesheet" href="main.css" />
+    <script src="script.js" defer></script>
   </head>
   <body>
     <form class="form" action="">
       <label>Spaceflight articles</label>
-      <input type="text" class="nb-news-input" />
+      <input
+        type="text"
+        class="nb-news-input"
+        placeholder="provide number of articles"
+      />
     </form>
 
     <div class="container">
@@ -22,65 +27,5 @@
       <div class="ball"></div>
       <div class="ball"></div>
     </div>
-
-    <script>
-      const userInput = document.querySelector('.nb-news-input');
-      const newsList = document.querySelector('.news-list');
-
-      const loading = document.querySelector('.loading');
-      userInput.addEventListener('change', loadNews);
-
-      window.addEventListener('scroll', () => {
-        const { scrollTop, scrollHeight, clientHeight } =
-          document.documentElement;
-
-        if (clientHeight + scrollTop >= scrollHeight) {
-          showLoading();
-        }
-      });
-      function showLoading() {
-        loading.classList.add('show');
-        setTimeout(loadNews, 1000);
-      }
-
-      function loadNews(e) {
-        let newsNumber = userInput.value;
-
-        let url = `https://api.spaceflightnewsapi.net/v3/articles?_limit=${newsNumber}`;
-
-        fetch(url)
-          .then((response) => {
-            return response.json();
-          })
-          .then((data) => {
-            data.forEach((news) => {
-              let newsTitle = document.createElement('h2');
-              let summaryField = document.createElement('p');
-              let link = document.createElement('a');
-
-              link.textContent = 'Read more';
-              link.setAttribute('href', news.url);
-              link.setAttribute('target', '_blank');
-              newsTitle.textContent = news.title;
-
-              if (news.summary.length - 200 <= 0) {
-                summaryField.textContent = news.summary + ' ...';
-              } else {
-                summaryField.textContent =
-                  news.summary.substring(0, 200) + ' ...';
-              }
-
-              newsList.appendChild(newsTitle);
-              newsList.appendChild(summaryField);
-              newsList.appendChild(link);
-              loading.classList.remove('show');
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-      loadNews();
-    </script>
   </body>
 </html>
