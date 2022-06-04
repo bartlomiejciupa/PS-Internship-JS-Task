@@ -23,7 +23,8 @@ body::before {
 }
 
 .form {
-  position: relative;
+  z-index: 1;
+  position: sticky;
   top: 0;
   display: block;
   width: 100%;
@@ -48,7 +49,7 @@ body::before {
 }
 
 .container {
-  padding: 5rem;
+  padding: 1.5rem;
   display: flex;
   align-items: flex-start;
   height: 100%;
@@ -160,14 +161,16 @@ a:active {
   }
 }
 .articles-counter {
+  z-index: 1;
+  margin-left: 70px;
   background-color: var(--white);
-  position: relative;
-  top: -100px;
-  left: 40px;
-  height: 5rem;
-  width: 25rem;
-  padding: 1rem;
+  position: sticky;
+  top: 95px;
+  padding: 5px;
+  max-width: 100px;
+
   text-align: center;
+  line-height: 1.5em;
 }
 span {
   color: var(--dark);
@@ -175,4 +178,5 @@ span {
 span p {
   color: var(--dark);
   padding: 0;
+  margin-top: 10px;
 }

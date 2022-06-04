@@ -5,7 +5,11 @@ const newsList = document.querySelector('.news-list');
 const loading = document.querySelector('.loading');
 const container = document.querySelector('.container');
 
-userInput.addEventListener('change', loadNews);
+userInput.addEventListener('change', (e) => {
+  let userNumber = e.target.value;
+  console.log(userNumber);
+  loadNews(userNumber);
+});
 
 window.addEventListener('scroll', () => {
   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
@@ -15,19 +19,31 @@ window.addEventListener('scroll', () => {
   }
 });
 
-let newsNumber;
-if (userInput.value) {
-  newsNumber = userInput.value;
-} else {
-  newsNumber = 15;
-}
-console.log(newsNumber);
-console.log(userInput.value);
-
 function showLoading() {
   loading.classList.add('show');
   setTimeout(loadNews, 1000);
 }
+
+function loadNews(userNumber) {
+  let newsNumber;
+  userNumber ? (newsNumber = userNumber) : (newsNumber = 15);
+
+  let url = `https://api.spaceflightnewsapi.net/v3/articles?_limit=${newsNumber}`;
+
+  fetch(url)
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      showNews(data);
+      loadCounter();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+loadNews();
+
 const showNews = (data) => {
   data.forEach((news) => {
     let wrapper = document.createElement('div');
@@ -51,34 +67,6 @@ const showNews = (data) => {
     loading.classList.remove('show');
   });
 };
-const showCounter = (data) => {
-  const counter = document.createElement('span');
-  counter.classList.add('articles-counter');
-  counter.innerText = 'Number of articles: ' + data;
-  container.appendChild(counter);
-  let counterLoadedNews = document.createElement('p');
-  counterLoadedNews.textContent = newsNumber;
-  counter.appendChild(counterLoadedNews);
-};
-
-function loadNews() {
-  let url = `https://api.spaceflightnewsapi.net/v3/articles?_limit=${newsNumber}`;
-
-  let urlTest = 'https://api.spaceflightnewsapi.net/v3/articles';
-  fetch(url)
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      showNews(data);
-      console.log(data.length);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-loadNews();
-
 function loadCounter() {
   let url = `https://api.spaceflightnewsapi.net/v3/articles/count`;
   fetch(url)
@@ -86,10 +74,29 @@ function loadCounter() {
       return response.json();
     })
     .then((data) => {
-      showCounter(data);
+      handleCounter(data);
     })
     .catch((error) => {
       console.log(error);
     });
 }
-loadCounter();
+
+const counterOfTotalArticles = document.createElement('span');
+counterOfTotalArticles.classList.add('articles-counter');
+const counterOfLoadedNews = document.createElement('p');
+
+const handleCounter = (data) => {
+  let fetchedArticles = document.querySelector('.news-list').childElementCount;
+  refreshCounter(data, fetchedArticles);
+  showCounter();
+};
+
+const refreshCounter = (data, ...rest) => {
+  counterOfTotalArticles.textContent = 'Amount of total articles: ' + data;
+  counterOfLoadedNews.textContent = 'Amount of load articles: ' + rest;
+};
+
+const showCounter = () => {
+  counterOfTotalArticles.appendChild(counterOfLoadedNews);
+  container.appendChild(counterOfTotalArticles);
+};
