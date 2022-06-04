@@ -4,6 +4,10 @@ const userInput = document.querySelector('.nb-news-input');
 const newsList = document.querySelector('.news-list');
 const loading = document.querySelector('.loading');
 const container = document.querySelector('.container');
+const getFromLibraryButton = document.createElement('button');
+getFromLibraryButton.textContent = 'Get from Library';
+getFromLibraryButton.setAttribute('style', 'position: relative');
+container.appendChild(getFromLibraryButton);
 
 userInput.addEventListener('change', (e) => {
   let userNumber = e.target.value;
@@ -35,7 +39,7 @@ function loadNews(userNumber) {
       return response.json();
     })
     .then((data) => {
-      showNews(data);
+      handleNews(data);
       loadCounter();
     })
     .catch((error) => {
@@ -44,27 +48,62 @@ function loadNews(userNumber) {
 }
 loadNews();
 
-const showNews = (data) => {
+const handleNews = (data) => {
   data.forEach((news) => {
     let wrapper = document.createElement('div');
     let newsTitle = document.createElement('h2');
+    let newsSite = document.createElement('p');
+    let publishedAt = document.createElement('p');
+    let button = document.createElement('button');
     let summaryField = document.createElement('p');
-    let link = document.createElement('a');
-
+    let hyperLink = document.createElement('a');
+    let id = news.id;
     wrapper.classList.add('wrapper');
-    link.textContent = 'Read article';
-    link.setAttribute('href', news.url);
-    link.setAttribute('target', '_blank');
-    newsTitle.textContent = news.title;
 
-    if (news.summary.length - 200 <= 0) {
-      summaryField.textContent = news.summary + '...';
-    } else {
-      summaryField.textContent = news.summary.substring(0, 200) + '...';
-    }
-    wrapper.append(newsTitle, summaryField, link);
+    newsTitle.textContent = news.title;
+    newsSite.textContent = news.newsSite;
+    publishedAt.textContent = news.publishedAt;
+    button.textContent = 'Add to Library';
+    summaryField.textContent =
+      news.summary.length - 200 <= 0
+        ? (summaryField.textContent = news.summary + '...')
+        : (summaryField.textContent = news.summary.substring(0, 200) + '...');
+
+    hyperLink.textContent = 'Read article';
+    hyperLink.setAttribute('href', news.url);
+    hyperLink.setAttribute('target', '_blank');
+
+    wrapper.append(
+      newsTitle,
+      newsSite,
+      publishedAt,
+      summaryField,
+      hyperLink,
+      button
+    );
+
     newsList.appendChild(wrapper);
     loading.classList.remove('show');
+
+    getFromLibraryButton.addEventListener('click', (e) => {
+      const articleFromLibrary = JSON.parse(localStorage.getItem(id));
+      console.log(articleFromLibrary);
+    });
+    button.addEventListener('click', (e) => {
+      button.textContent =
+        button.textContent === 'Add to Library'
+          ? 'Remove from Library'
+          : 'Add to Library';
+
+      handleLibrary(
+        id,
+        newsTitle,
+        newsSite,
+        publishedAt,
+        summaryField,
+        hyperLink
+      );
+    });
   });
 };
 function loadCounter() {
@@ -73,8 +112,8 @@ function loadCounter() {
     .then((response) => {
       return response.json();
     })
-    .then((data) => {
-      handleCounter(data);
+    .then((totalNumber) => {
+      handleCounter(totalNumber);
     })
     .catch((error) => {
       console.log(error);
@@ -85,18 +124,30 @@ const counterOfTotalArticles = document.createElement('span');
 counterOfTotalArticles.classList.add('articles-counter');
 const counterOfLoadedNews = document.createElement('p');
 
-const handleCounter = (data) => {
-  let fetchedArticles = document.querySelector('.news-list').childElementCount;
-  refreshCounter(data, fetchedArticles);
+const handleCounter = (totalNumber) => {
+  let fetchedArticlesNumber =
+    document.querySelector('.news-list').childElementCount;
+  refreshCounter(totalNumber, fetchedArticlesNumber);
   showCounter();
 };
 
-const refreshCounter = (data, ...rest) => {
-  counterOfTotalArticles.textContent = 'Amount of total articles: ' + data;
-  counterOfLoadedNews.textContent = 'Amount of load articles: ' + rest;
+const refreshCounter = (number1, ...number2) => {
+  counterOfTotalArticles.textContent = 'Amount of total articles: ' + number1;
+  counterOfLoadedNews.textContent = 'Amount of load articles: ' + number2;
 };
 
 const showCounter = () => {
   counterOfTotalArticles.appendChild(counterOfLoadedNews);
   container.appendChild(counterOfTotalArticles);
+};
+const handleLibrary = (param1, ...rest) => {
+  let data = [...rest];
+
+  let article = [];
+  data.map((item) => {
+    article.unshift(item.outerText);
+    article.reverse();
+    window.localStorage.setItem(param1, JSON.stringify(article));
+    console.log(param1);
+  });
 };
