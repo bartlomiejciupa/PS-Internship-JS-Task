@@ -50,6 +50,7 @@ body::before {
 .container {
   padding: 5rem;
   display: flex;
+  align-items: flex-start;
   height: 100%;
   max-width: 100%;
   margin: 2rem auto 0;
@@ -115,6 +116,7 @@ a:active {
 
 .loading {
   opacity: 0;
+  height: 1.5rem;
   display: flex;
   position: fixed;
   bottom: 50px;
@@ -132,10 +134,11 @@ a:active {
 .ball {
   background-color: var(--white);
   border-radius: 50%;
+  border: 2px solid var(--dark);
   margin: 1rem;
-  height: 4rem;
-  width: 4rem;
-  animation: jump 0.5s ease-in infinite;
+  height: 2rem;
+  width: 2rem;
+  animation: jump 0.7s ease-in infinite;
 }
 
 .ball:nth-of-type(2) {
@@ -153,6 +156,23 @@ a:active {
   }
 
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-25px);
   }
+}
+.articles-counter {
+  background-color: var(--white);
+  position: relative;
+  top: -100px;
+  left: 40px;
+  height: 5rem;
+  width: 25rem;
+  padding: 1rem;
+  text-align: center;
+}
+span {
+  color: var(--dark);
+}
+span p {
+  color: var(--dark);
+  padding: 0;
 }
