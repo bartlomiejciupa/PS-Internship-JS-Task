@@ -104,9 +104,13 @@ const handleNews = (data) => {
 
     getFromLibraryButton.addEventListener('click', (e) => {
       const articleFromLibrary = JSON.parse(localStorage.getItem(id));
-      newsList.innerHTML = '';
-      console.log(articleFromLibrary);
-      // handleNews(articleFromLibrary);
+      newsList.innerHTML = 'Library';
+
+      if (articleFromLibrary !== null) {
+        console.log(articleFromLibrary);
+      } else {
+        return;
+      }
     });
 
     button.addEventListener('click', (e) => {
