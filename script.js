@@ -28,6 +28,111 @@ function showLoading() {
   setTimeout(loadNews, 1000);
 }
 
+const createContentField = (news, index) => {
+  let wrapper = document.createElement('div');
+  let newsTitle = document.createElement('h2');
+  let newsSite = document.createElement('p');
+  let publishedAt = document.createElement('p');
+  let button = document.createElement('button');
+  let summaryField = document.createElement('p');
+  let hyperLink = document.createElement('a');
+  let id = news.id;
+  wrapper.classList.add('wrapper');
+  newsTitle.textContent = news.title;
+  newsSite.textContent = news.newsSite;
+
+  function publishedDay() {
+    const date = new Date(news.publishedAt);
+    const year = date.getFullYear();
+    let month = date.getMonth();
+    let day = date.getDate();
+
+    if (day < 10) {
+      day = '0' + day;
+    }
+    if (month < 10) {
+      month = '0' + month;
+    }
+    return `${year}-${month}-${day}`;
+  }
+
+  publishedAt.textContent = publishedDay();
+  const idLocalStorageExist = JSON.parse(localStorage.getItem(id));
+  button.textContent =
+    idLocalStorageExist == null ? 'Add to Library' : 'Remove from Library';
+
+  summaryField.textContent =
+    news.summary.length - 200 <= 0
+      ? (summaryField.textContent = news.summary + '...')
+      : (summaryField.textContent = news.summary.substring(0, 200) + '...');
+
+  hyperLink.textContent = 'Read article';
+  hyperLink.setAttribute('href', news.url);
+  hyperLink.setAttribute('target', '_blank');
+  wrapper.append(
+    newsTitle,
+    newsSite,
+    publishedAt,
+    summaryField,
+    hyperLink,
+    button
+  );
+
+  newsList.appendChild(wrapper);
+  return {
+    button,
+    id,
+    newsTitle,
+    newsSite,
+    publishedAt,
+    summaryField,
+    hyperLink,
+  };
+};
+
+const handleNews = (data) => {
+  data.forEach(function (news, index) {
+    const {
+      id,
+      button,
+      newsTitle,
+      newsSite,
+      publishedAt,
+      summaryField,
+      hyperLink,
+    } = createContentField(news, index);
+
+    getFromLibraryButton.addEventListener('click', (e) => {
+      const articleFromLibrary = JSON.parse(localStorage.getItem(id));
+      newsList.innerHTML = '';
+      console.log(articleFromLibrary);
+      // handleNews(articleFromLibrary);
+    });
+
+    button.addEventListener('click', (e) => {
+      const idLocalStorageExist = JSON.parse(localStorage.getItem(id));
+
+      if (idLocalStorageExist !== null) {
+        button.textContent = 'Add to Library';
+      } else {
+        button.textContent = 'Remove from Library';
+      }
+
+      handleLibrary(
+        id,
+        button,
+        newsTitle,
+        newsSite,
+        publishedAt,
+        summaryField,
+        hyperLink
+      );
+    });
+  });
+
+  loading.classList.remove('show');
+};
+
 function loadNews(userNumber) {
   let newsNumber;
   userNumber ? (newsNumber = userNumber) : (newsNumber = 15);
@@ -35,9 +140,7 @@ function loadNews(userNumber) {
   let url = `https://api.spaceflightnewsapi.net/v3/articles?_limit=${newsNumber}`;
 
   fetch(url)
-    .then((response) => {
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((data) => {
       handleNews(data);
       loadCounter();
@@ -47,65 +150,6 @@ function loadNews(userNumber) {
     });
 }
 loadNews();
-
-const handleNews = (data) => {
-  data.forEach((news) => {
-    let wrapper = document.createElement('div');
-    let newsTitle = document.createElement('h2');
-    let newsSite = document.createElement('p');
-    let publishedAt = document.createElement('p');
-    let button = document.createElement('button');
-    let summaryField = document.createElement('p');
-    let hyperLink = document.createElement('a');
-    let id = news.id;
-    wrapper.classList.add('wrapper');
-
-    newsTitle.textContent = news.title;
-    newsSite.textContent = news.newsSite;
-    publishedAt.textContent = news.publishedAt;
-    button.textContent = 'Add to Library';
-    summaryField.textContent =
-      news.summary.length - 200 <= 0
-        ? (summaryField.textContent = news.summary + '...')
-        : (summaryField.textContent = news.summary.substring(0, 200) + '...');
-
-    hyperLink.textContent = 'Read article';
-    hyperLink.setAttribute('href', news.url);
-    hyperLink.setAttribute('target', '_blank');
-
-    wrapper.append(
-      newsTitle,
-      newsSite,
-      publishedAt,
-      summaryField,
-      hyperLink,
-      button
-    );
-
-    newsList.appendChild(wrapper);
-    loading.classList.remove('show');
-
-    getFromLibraryButton.addEventListener('click', (e) => {
-      const articleFromLibrary = JSON.parse(localStorage.getItem(id));
-      console.log(articleFromLibrary);
-    });
-    button.addEventListener('click', (e) => {
-      button.textContent =
-        button.textContent === 'Add to Library'
-          ? 'Remove from Library'
-          : 'Add to Library';
-
-      handleLibrary(
-        id,
-        newsTitle,
-        newsSite,
-        publishedAt,
-        summaryField,
-        hyperLink
-      );
-    });
-  });
-};
 function loadCounter() {
   let url = `https://api.spaceflightnewsapi.net/v3/articles/count`;
   fetch(url)
@@ -140,14 +184,15 @@ const showCounter = () => {
   counterOfTotalArticles.appendChild(counterOfLoadedNews);
   container.appendChild(counterOfTotalArticles);
 };
-const handleLibrary = (param1, ...rest) => {
+const handleLibrary = (id, button, ...rest) => {
   let data = [...rest];
-
   let article = [];
-  data.map((item) => {
-    article.unshift(item.outerText);
-    article.reverse();
-    window.localStorage.setItem(param1, JSON.stringify(article));
-    console.log(param1);
-  });
+
+  button.textContent === 'Remove from Library'
+    ? data.map((item) => {
+        console.log(item);
+        article.push(item.outerText);
+        window.localStorage.setItem(id, JSON.stringify(article));
+      })
+    : window.localStorage.removeItem(id);
 };
